@@ -1,0 +1,46 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+
+<h1>InhaBitCoin</h1>
+<h3><a href="@{Application.newsUpdate()}">Update News</a></h3>
+
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var chartData = new google.visualization.DataTable();
+        chartData.addColumn('date', 'Date'); // Implicit series 1 data col.
+        chartData.addColumn('number', 'Value'); // Implicit domain label col.
+        chartData.addColumn({type:'string', role:'annotation'});
+        chartData.addColumn({type:'string', role:'annotationText'});  
+
+        var data1 = [
+            [ new Date(2008, 1, 28, 0, 31, 26), 4, null, null],
+            [ new Date(2008, 1, 29, 0, 32, 26), 6, null, null],
+            [ new Date(2008, 1, 30, 0, 32, 26), 6, 'bizjournals', 'Mt. Gox CEO selling Bitcoins.com, will give some proceeds to burned investors (InfoWorld)'],
+            [ new Date(2008, 1, 31, 0, 33, 26), 4, null, null]
+        ];
+    
+        chartData.addRows(data1);
+    
+        var chart = new    
+          google.visualization.LineChart(document.getElementById('chart_div'));
+
+        var options = {
+             title: "Trends and news",                            
+        };
+        
+        chart.draw(chartData,options);
+      }
+    </script>
+<div id="chart_div" style="width: 900px; height: 500px;"></div>
+
+#{list items:articles, as:'article'}
+<hr>
+<div>
+    <p>${article.feedzillaId} - <strong><a href="${article.url}">${article.title}</a></strong> - ${article.author}</p>
+    <p>${article.published}</p>
+    <p>${article.summary}</p>
+</div>
+#{/list}
