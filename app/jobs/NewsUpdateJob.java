@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import models.Article;
 import play.Logger;
+import play.jobs.Every;
 import play.jobs.Job;
 import play.libs.WS;
 import play.libs.WS.HttpResponse;
@@ -23,6 +24,7 @@ import play.libs.WS.HttpResponse;
  *
  * @author loopasam
  */
+//@Every("1mn")
 public class NewsUpdateJob extends Job {
 
     @Override

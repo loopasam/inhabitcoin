@@ -1,40 +1,17 @@
 #{extends 'main.html' /}
 #{set title:'Home' /}
 
-<h1>InhaBitCoin</h1>
+<h1>InhaBitCoin - <small id="price"></small></h1>
+
+<div>
+    <div class="demo-container">
+        <div id="placeholder" class="demo-placeholder"></div>
+    </div>
+</div>
+
 <h3><a href="@{Application.newsUpdate()}">Update News</a></h3>
+<h3><a href="@{Application.transactionsUpdate()}">Update transactions</a></h3>
 
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <script type="text/javascript">
-      google.load("visualization", "1", {packages:["corechart"]});
-      google.setOnLoadCallback(drawChart);
-      function drawChart() {
-        var chartData = new google.visualization.DataTable();
-        chartData.addColumn('date', 'Date'); // Implicit series 1 data col.
-        chartData.addColumn('number', 'Value'); // Implicit domain label col.
-        chartData.addColumn({type:'string', role:'annotation'});
-        chartData.addColumn({type:'string', role:'annotationText'});  
-
-        var data1 = [
-            [ new Date(2008, 1, 28, 0, 31, 26), 4, null, null],
-            [ new Date(2008, 1, 29, 0, 32, 26), 6, null, null],
-            [ new Date(2008, 1, 30, 0, 32, 26), 6, 'bizjournals', 'Mt. Gox CEO selling Bitcoins.com, will give some proceeds to burned investors (InfoWorld)'],
-            [ new Date(2008, 1, 31, 0, 33, 26), 4, null, null]
-        ];
-    
-        chartData.addRows(data1);
-    
-        var chart = new    
-          google.visualization.LineChart(document.getElementById('chart_div'));
-
-        var options = {
-             title: "Trends and news",                            
-        };
-        
-        chart.draw(chartData,options);
-      }
-    </script>
-<div id="chart_div" style="width: 900px; height: 500px;"></div>
 
 #{list items:articles, as:'article'}
 <hr>
@@ -44,3 +21,71 @@
     <p>${article.summary}</p>
 </div>
 #{/list}
+
+
+<script type="text/javascript">
+
+    $(function() {
+
+        var width = $(".demo-container").parent().width();
+        $(".demo-container").width(width - 50);
+
+        var plot;
+
+//        var o = plot.pointOffset({x: 3, y: -1.2});
+//        placeholder.append("<div style='position:absolute;left:" + (o.left + 4) + "px;top:" + o.top + "px;color:#666;'>Warming up</div>");
+//        o = plot.pointOffset({x: 8, y: -1.2});
+//        placeholder.append("<div style='position:absolute;left:" + (o.left + 4) + "px;top:" + o.top + "px;color:#666;'>Actual measurements</div>");
+
+        // Draw a little arrow on top of the last label to demonstrate canvas
+        // drawing
+
+//        var ctx = plot.getCanvas().getContext("2d");
+//        ctx.beginPath();
+//        o.left += 4;
+//        ctx.moveTo(o.left, o.top);
+//        ctx.lineTo(o.left, o.top - 10);
+//        ctx.lineTo(o.left + 10, o.top - 5);
+//        ctx.lineTo(o.left, o.top);
+//        ctx.fillStyle = "#000";
+//        ctx.fill();
+
+        function update() {
+
+            $.ajax({
+                type: "GET",
+                url: "/transactions.json",
+            }).done(function(json) {
+                var min = 100000.0;
+                var d1 = [];
+                json.forEach(function(entry) {
+                    d1.push([entry.stamp, parseFloat(entry.price)]);
+                    if(min > parseFloat(entry.price)){
+                        min = parseFloat(entry.price);
+                    }
+                });
+                $("#price").text(d1[0][1]);
+                var data = [{data: d1, label: "Price", color: "#2980b9"}];
+
+                var markings = [
+                    {color: "#000", lineWidth: 1, xaxis: {from: 1405373801000, to: 1405373801000}},
+                ];
+
+                var placeholder = $("#placeholder");
+                plot = $.plot(placeholder, data, {
+                    xaxis: {mode: "time"},
+                    grid: {markings: markings}
+                });
+                var o = plot.pointOffset({x: 1405373801000, y: min});
+                placeholder.append("<div style='position:absolute;left:" + (o.left + 4) + "px;top:" + o.top + "px;color:#666;'>&larr;Annotation</div>");
+
+                setTimeout(update, 1000);
+
+            });
+        }
+
+        update();
+
+    });
+
+</script>

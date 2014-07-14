@@ -37,7 +37,10 @@ public class Article extends Model {
 
     public String author;
 
-    public Article(String title, String published, String source, String sourceUrl, String url, String summary, String author, int feedzillaId) throws ParseException {
+    public Article(String title, String published, String source, 
+            String sourceUrl, String url, String summary, 
+            String author, int feedzillaId) throws ParseException {
+        
         //TODO remove parentheses
         this.title = title;
         //Transform as Date: Wed, 09 Jul 2014 13:03:00 +0100
