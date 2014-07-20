@@ -37,6 +37,8 @@ public class Article extends Model {
 
     public String author;
 
+    public long stamp;
+
     public Article(String title, String published, String source, 
             String sourceUrl, String url, String summary, 
             String author, int feedzillaId) throws ParseException {
@@ -45,6 +47,7 @@ public class Article extends Model {
         this.title = title;
         //Transform as Date: Wed, 09 Jul 2014 13:03:00 +0100
         this.published = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss +SSSS", Locale.ENGLISH).parse(published);
+        this.stamp = this.published.getTime();
         this.source = source;
         this.sourceUrl = sourceUrl;
         this.url = url;

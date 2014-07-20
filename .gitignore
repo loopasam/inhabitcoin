@@ -17,3 +17,5 @@ server.pid
 .cache
 /nbproject
 /conf/application.conf
+.idea/
+inhabitcoin.ipr

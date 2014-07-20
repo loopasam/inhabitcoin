@@ -9,6 +9,7 @@
     </div>
 </div>
 
+
 <h3><a href="@{Application.newsUpdate()}">Update News</a></h3>
 <h3><a href="@{Application.transactionsUpdate()}">Update transactions</a></h3>
 
@@ -29,6 +30,7 @@
 
         var width = $(".demo-container").parent().width();
         $(".demo-container").width(width - 50);
+        //$(".demo-container").height(300);
 
         var plot;
 
@@ -56,28 +58,40 @@
                 type: "GET",
                 url: "/transactions.json",
             }).done(function(json) {
+
                 var min = 100000.0;
                 var d1 = [];
-                json.forEach(function(entry) {
+                json.transactions.forEach(function(entry) {
                     d1.push([entry.stamp, parseFloat(entry.price)]);
                     if(min > parseFloat(entry.price)){
                         min = parseFloat(entry.price);
                     }
                 });
-                $("#price").text(d1[0][1]);
-                var data = [{data: d1, label: "Price", color: "#2980b9"}];
 
-                var markings = [
-                    {color: "#000", lineWidth: 1, xaxis: {from: 1405373801000, to: 1405373801000}},
-                ];
+
+                $("#price").text(d1[0][1]);
+                var data = [{data: d1, color: "#2980b9"}];
+
+                var markings = [];
+
+                json.articles.forEach(function(entry) {
+                    markings.push({color: "#000", lineWidth: 1, xaxis: {from: entry.stamp, to: entry.stamp}});
+                });
 
                 var placeholder = $("#placeholder");
                 plot = $.plot(placeholder, data, {
                     xaxis: {mode: "time"},
+                    //yaxis: {min: min - 10},
                     grid: {markings: markings}
                 });
-                var o = plot.pointOffset({x: 1405373801000, y: min});
-                placeholder.append("<div style='position:absolute;left:" + (o.left + 4) + "px;top:" + o.top + "px;color:#666;'>&larr;Annotation</div>");
+
+                //TODO plot the titles
+                json.articles.forEach(function(entry) {
+                    var o = plot.pointOffset({x: entry.stamp, y: min});
+                    var that = "<div style='position:absolute;left:" + (o.left + 4) + "px;top:" + o.top + "px;color:#666;'>&larr;<a href='#'>" + entry.title + "</a></div>";
+                    placeholder.append(that);
+                });
+
 
                 setTimeout(update, 1000);
 
